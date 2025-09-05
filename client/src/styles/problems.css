@@ -1,0 +1,111 @@
+body {
+  background: linear-gradient(to bottom right, #000000, #003333);
+  font-family: 'Orbitron', sans-serif;
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+header {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.timer {
+  color: #00ffff;
+  font-weight: bold;
+  text-shadow: 0 0 10px #00ffff;
+}
+
+.problems-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+.right-half{
+  background: #0a0a0a;
+  border-radius: 8px;
+  padding: 1rem;
+  width: 90%;
+  max-width: 800px;
+  color: #00ffff;
+}
+
+header img {
+  height: 90px;
+}
+
+header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+header button {
+  background: linear-gradient(to right, #00ffff, #6600ff);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  color: #000;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 0 10px #00ffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+header button {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px #00ffff;
+}
+
+
+main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.left-half, .right-half {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+
+.left-half p {
+  color: #cccccc;
+}
+
+
+.left-half h3 {
+  color: #00ffff;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+
+.problem-card
+{
+  background: #1a1a1a;
+  border: 2px solid #00ffff;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 0 15px black;
+  margin: 1rem 0;
+  width: 90%;
+  min-height: 45%;
+  max-width: 800px;
+}
+
+.problem-card 
+{
+  margin-bottom: 0.5rem;
+  color: #fff;
+  font-size: large;
+}

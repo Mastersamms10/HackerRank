@@ -1,0 +1,34 @@
+.admin-panel {
+  padding: 2rem;
+  background-color: #130933;
+  max-height: 90vh;         /* Limit height */
+  overflow-y: auto;         /* Enable vertical scroll */
+}
+
+.submissions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table-wrapper {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.submissions-table th,
+.submissions-table td {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.code-preview {
+  max-width: 400px;
+  max-height: 200px;       /* Limit height */
+  overflow: auto;          /* Enable both scroll directions */
+  font-family: monospace;
+  background-color: #1a61b3;
+  padding: 0.5rem;
+  border-radius: 4px;
+  white-space: pre-wrap;   /* Wrap long lines */
+}
+

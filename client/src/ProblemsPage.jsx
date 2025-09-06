@@ -8,7 +8,6 @@ import "./styles/problems.css";
 
 function ProblemsPage() {
   const navigate = useNavigate();
-
   const location = useLocation();
   const [teamInfo] = useState({
     team_id: location.state?.team_id || "",
@@ -21,22 +20,13 @@ const [initialCode, setInitialCode] = useState("");
   const [selectedProblem, setSelectedProblem] = useState(null);
   const [submittedCode, setSubmittedCode] = useState("");
   const [language, setLanguage] = useState("javascript");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-  const handlePopState = () => {
-    window.history.pushState(null, "", window.location.href);
-  };
 
-  window.history.pushState(null, "", window.location.href);
-  window.addEventListener("popstate", handlePopState);
-
-  return () => {
-    window.removeEventListener("popstate", handlePopState);
-  };
-}, []);
+ 
   useEffect(() => {
   if (!selectedProblem) return;
-
   axios.get("http://localhost:3001/submission", {
     params: {
       team_id: teamInfo.team_id,
@@ -44,14 +34,10 @@ const [initialCode, setInitialCode] = useState("");
     }
   })
   .then((res) => {
-
-
   setInitialCode(res.data.code || "");
-
-
   setSubmissions((prev) => ({
     ...prev,
-
+    [selectedProblem.id]: res.data
   }));
 })
 .catch((err) => {
@@ -61,82 +47,65 @@ const [initialCode, setInitialCode] = useState("");
 });
 }, [selectedProblem]);
   useEffect(() => {
-    // async function fetchData() {
-    //   const res = await axios.get("http://localhost:3001/problems");
-    //   setProblems(res.data);
-    // }
     fetchData();
   }, []);
+useEffect(() => {
+  if (problems.length > 0 && currentIndex < problems.length) {
+    setSelectedProblem(problems[currentIndex]);
+  }
+}, [problems, currentIndex]);
 
   const handleCodeChange = (code) => {
   if (selectedProblem) {
     setSubmissions((prev) => ({
       ...prev,
-      [selectedProblem.id]: { code, language }
+      [selectedProblem.id]: { code, language: language || "python" }
     }));
   }
 };
 const fetchData = async () => {
+  try{
   const res = await axios.get("http://localhost:3001/problems", {
     params: { team_id: teamInfo.team_id }
   });
   setProblems(res.data);
+}
+  catch (err) {
+    console.error("Error fetching problems:", err);
+    setProblems([]); // fallback
+  }
 };
 
-const handleAutoSubmit = () => {
-  const entries = Object.entries(submissions);
-
-  if (entries.length === 0) {
-    alert("Time's up! No code submitted.");
-navigate("/", { replace: true });
+const handleSubmit = async () => {
+  const currentProblem = problems[currentIndex];
+  const submission = submissions[currentProblem?.id];
+  if (!submission || !submission.code) {
+    alert("No code submitted for this problem.");
     return;
   }
 
-  const submitPromises = entries.map(([problem_id, { code, language }]) => {
-    return axios.post("http://localhost:3001/submit", {
-      team_id: teamInfo.team_id,
-      team_name: teamInfo.team_name,
-      problem_id,
-      language,
-      code
-    });
+  try{
+  await axios.post("http://localhost:3001/submit", {
+    team_id: teamInfo.team_id,
+    team_name: teamInfo.team_name,
+    problem_id: currentProblem.id,
+    language: submission.language,
+    code: submission.code
   });
-
-  Promise.all(submitPromises)
-    .then(() => {
-      alert("Time's up! Code auto-submitted.");
-navigate("/", { replace: true });
-    })
-    .catch((err) => {
-      console.error("Auto-submission failed:", err);
-      alert("Auto-submission failed. Please try again.");
-    });
-};
-    const handleSubmit = () => {
-  const entries = Object.entries(submissions);
-
-  if (entries.length === 0) {
-    alert("No code submitted for any problem.");
-    return;
-  }
-
-  const submitPromises = entries.map(([problem_id, { code, language }]) => {
-    return axios.post("http://localhost:3001/submit", {
-      team_id: teamInfo.team_id,
-      team_name: teamInfo.team_name,
-      problem_id,
-      language,
-      code
-    });
-  });
-
-  Promise.all(submitPromises)
-    .then(() => {
-      alert("All submissions successful!");
+  if (currentIndex < problems.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    } else {
+      alert("All problems submitted!");
       navigate("/");
-    })
-    .catch((err) => console.error("Submission failed:", err));
-  
+    }
+}
+  catch (err) {
+    console.error("Submission failed:", err);
+    alert("Submission failed. Try again.");
+  }
+  finally {
+    setIsSubmitting(false); 
+  }
 };
 
 
@@ -145,30 +114,47 @@ navigate("/", { replace: true });
       <header>
         <img src="\src\assets\spectrum.jpg" alt="Spectrum" />
         <h2>{teamInfo.team_name}  {teamInfo.team_id}</h2>
-        <Timer onTimeUp={handleAutoSubmit} className="timer" />
-        <button onClick={handleSubmit}>Submit</button>
+        <Timer onTimeUp={handleSubmit} className="timer" />
+       <button 
+  onClick={handleSubmit} 
+  disabled={isSubmitting}
+>
+  {isSubmitting ? "Submitting..." : "Submit"}
+</button>
         <h4>Selected Problem: {selectedProblem?.title || "None"}</h4>
         {/* <button onClick={fetchData}>Load Next Problems</button> */}
       </header>
       <main>
-        <ProblemsPanel problems={problems} onSelectProblem={setSelectedProblem} />
+        <ProblemsPanel problems={[selectedProblem]} />
+
+
+
         <div className="right-half">
-          <CodeEditor
-  initialCode={submissions[selectedProblem?.id]?.code || selectedProblem?.code || ""}
-  onCodeChange={handleCodeChange}
-  onLanguageChange={(lang) => {
-    if (selectedProblem) {
-      setSubmissions((prev) => ({
-        ...prev,
-        [selectedProblem.id]: {
-          ...prev[selectedProblem.id],
-          language: lang
-        }
-      }));
+         {selectedProblem && (
+  <CodeEditor
+    initialCode={
+      submissions[selectedProblem.id]?.code ||
+      selectedProblem.code ||
+      ""
     }
-    setLanguage(lang);
-  }}
-/>
+    initialLanguage={
+      submissions[selectedProblem.id]?.language || "python"
+    }
+    onCodeChange={handleCodeChange}
+    onLanguageChange={(lang) => {
+      if (selectedProblem) {
+        setSubmissions((prev) => ({
+          ...prev,
+          [selectedProblem.id]: {
+            ...prev[selectedProblem.id],
+            language: lang
+          }
+        }));
+      }
+    }}
+  />
+)}
+
         </div>
       </main>
     </div>

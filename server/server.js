@@ -109,8 +109,6 @@ WHERE ap.team_id = ?
     });
   });
 });
-
-// 🔐 Login Route
 app.post("/login", (req, res) => {
   const { team_id, team_name } = req.body;
 
@@ -132,8 +130,6 @@ app.post("/login", (req, res) => {
     }
   });
 });
-
-// 📝 Register Route
 app.post("/register", (req, res) => {
   const { team_id, team_name } = req.body;
 

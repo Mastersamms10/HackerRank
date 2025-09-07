@@ -12,11 +12,11 @@ const languages = ["javascript", "java", "c", "python"];
 
 function CodeEditor({ initialCode, onCodeChange, onLanguageChange }) {
  const [code, setCode] = useState(initialCode || "");
- const [lang, setLang] = useState("javascript");
+ const [lang, setLang] = useState("c");
 
 
   useEffect(() => {
-    setCode(initialCode || "");
+    setCode(initialCode);
   }, [initialCode]);
 
   useEffect(() => {

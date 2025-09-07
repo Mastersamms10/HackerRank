@@ -19,7 +19,7 @@ useEffect(() => {
 
   return (
     <div className="admin-panel">
-      <h2>📊 Admin Panel – Submissions Overview</h2>
+      <h2> Admin Panel – Submissions Overview</h2>
       <div className="table-wrapper">
       <table className="submissions-table">
         <thead>
@@ -30,6 +30,8 @@ useEffect(() => {
             <th>Language</th>
             <th>Submitted At</th>
             <th>Code</th>
+            <th>Output</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -43,6 +45,8 @@ useEffect(() => {
               <td>
                 <pre className="code-preview">{sub.code}</pre>
               </td>
+              <td>{sub.output}</td>
+              <td>{sub.status}</td>
             </tr>
           ))}
         </tbody>

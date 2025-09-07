@@ -36,18 +36,18 @@ app.post("/admin/login", (req, res) => {
 });
 
 app.post("/submit", (req, res) => {
-  const { team_id, team_name, problem_id, language, code } = req.body;
+  const { team_id, team_name, problem_id, language, code , Output , status} = req.body;
 
-  if (!team_id || !team_name || !problem_id || !language || !code) {
+  if (!team_id || !team_name || !problem_id || !language || !code ) {
     return res.status(400).json({ error: "Missing submission data" });
   }
 
   const query = `
-    INSERT INTO submissions (team_id, team_name, problem_id, language, code)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO submissions (team_id, team_name, problem_id, language, code, Output, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
 
-  db.query(query, [team_id, team_name, problem_id, language, code], (err) => {
+  db.query(query, [team_id, team_name, problem_id, language, code, Output, status], (err) => {
     if (err) {
       console.error("Submission error:", err);
       return res.status(500).json({ error: "Failed to submit" });
@@ -158,7 +158,7 @@ app.get("/admin/submissions", (req, res) => {
   const query = `
    SELECT s.id, s.team_id, s.team_name, s.problem_id,
            p.title AS problem_title,
-           s.language, s.code, s.submitted_at
+           s.language, s.code, s.output, s.status, s.submitted_at
     FROM codesprint.submissions s
     JOIN codesprint.problems p ON s.problem_id = p.id
     ORDER BY s.submitted_at DESC

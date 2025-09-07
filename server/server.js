@@ -173,6 +173,34 @@ app.get("/admin/submissions", (req, res) => {
     res.status(200).json(results);
   });
 });
+app.get("/submission", (req, res) => {
+    const { team_id, problem_id } = req.query;
+
+    if (!team_id || !problem_id) {
+        return res.status(400).json({ error: "Missing team_id or problem_id" });
+    }
+
+    const query = `
+        SELECT code, language FROM submissions
+        WHERE team_id = ? AND problem_id = ?
+        ORDER BY submitted_at DESC
+        LIMIT 1
+    `;
+
+    db.query(query, [team_id, problem_id], (err, results) => {
+        if (err) {
+            console.error("Error fetching submission:", err);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+
+        if (results.length > 0) {
+            res.status(200).json(results[0]);
+        } else {
+            // Return an empty object if no previous submission exists
+            res.status(200).json({});
+        }
+    });
+});
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

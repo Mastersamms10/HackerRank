@@ -16,7 +16,6 @@ useEffect(() => {
     navigate("/"); // Redirect to login
   }
 }, []);
-
   return (
     <div className="admin-panel">
       <h2> Admin Panel – Submissions Overview</h2>
@@ -45,6 +44,7 @@ useEffect(() => {
               <td>
                 <pre className="code-preview">{sub.code}</pre>
               </td>
+              
               <td>{sub.output}</td>
               <td>{sub.status}</td>
             </tr>

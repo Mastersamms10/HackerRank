@@ -138,141 +138,98 @@ function ProblemsPage() {
 
   const handleSubmit = async () => {
     if (!selectedProblem) {
-      alert("No problem selected.");
-      return;
+        alert("No problem selected.");
+        return;
     }
+
     const submission = submissions[selectedProblem.id];
-    
     if (!submission || !submission.code.trim()) {
-      alert("No code submitted for this problem.");
-      return;
+        alert("No code submitted for this problem.");
+        return;
     }
-    let langId;
-    if(submission.language == "java")
-      langId = 62;
-    if(submission.language == "javascript")
-      langId = 93;
-    if(submission.language == "c")
-      langId = 50;
-    if(submission.language == "python")
-      langId = 71;
-    const submissionData = {
-      source_code: submission.code,
-      language_id: langId,
-      stdin: selectedProblem.sample_input
-    };
-    try{
-      
-     const response = await fetch('https://judge0-ce.p.rapidapi.com/submissions?wait=true', {
-  method: 'POST',
-  headers: {
-    'x-rapidapi-key': '499ce3a32amsh2fc4cbe29632234p132566jsnd673b0e56558',
-    'Content-Type': 'application/json',
-    'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
-  },
-  body: JSON.stringify(submissionData),
-});
 
-if (response.status === 429) {
-  console.error("Rate limit exceeded");
-  setOutput("Rate limit exceeded. Please wait and try again.");
-  setStatus("Error");
-  return;
-}
-      const data = await response.json();
+    // Determine Judge0 language ID
+    const langId =
+        submission.language === "java" ? 62 :
+        submission.language === "javascript" ? 93 :
+        submission.language === "c" ? 50 :
+        submission.language === "python" ? 71 : null;
 
-if (data && data.token) {
-  const token = data.token;
-
-  // Polling loop
-  let result;
-  while (true) {
-    const resultResponse = await fetch(`https://judge0-ce.p.rapidapi.com/submissions/${token}`, {
-      headers: {
-        'x-rapidapi-key': '499ce3a32amsh2fc4cbe29632234p132566jsnd673b0e56558',
-      },
-    });
-    const result = await response.json();
-
-
-    if (result.status && result.status.id > 2) break;
-    await new Promise(resolve => setTimeout(resolve, 1000));
-  }
-
-  // Handle result...
-} else {
-  console.error("Submission token missing");
-  setOutput("Failed to retrieve execution token.");
-  setStatus("Error");
-  return;
-}
-    
-      if (result.status_id === 3) {
-      // Success (Accepted)
-      setOutput(result.stdout);
-      setStatus(result.status.description);
-    } else if (result.status_id === 6) {
-      // Compilation Error
-      setOutput(result.compile_output || 'No compilation output available.');
-      setStatus(result.status.description);
-    } else if (result.status_id >= 7 && result.status_id <= 11) {
-      // Runtime Errors (or other execution errors)
-      setOutput(result.stderr || 'No runtime error details available.');
-      setStatus(result.status.description);
-    } else {
-      // Other statuses (TLE, Wrong Answer, etc.)
-      setOutput(result.stdout || result.stderr || 'No output.');
-      setStatus(result.status.description);
+    if (langId === null) {
+        alert("Unsupported language selected.");
+        return;
     }
-      
-    }
-    catch(error)
-    {
-      console.error('Error:', error);
-      setOutput('Failed to execute code.');
-      setStatus('Error');
-    }
-    
-
-    
-    
 
     setIsSubmitting(true);
-    
-    try {
-      console.log("Submitting:", {
-        team_id: teamInfo.team_id,
-        problem_id: selectedProblem.id,
-        language: submission.language,
-        code: submission.code
-      });
+    let executionOutput = '';
+    let executionStatus = '';
+    const encode = (str) => btoa(unescape(encodeURIComponent(str)));
 
-      await axios.post("http://localhost:3001/submit", {
-        team_id: teamInfo.team_id,
-        team_name: teamInfo.team_name,
-        problem_id: selectedProblem.id,
-        language: submission.language,
-        code: submission.code,
-        Output: output,
-        status: status
-      });
-
-      // Move to next problem or finish
-      if (currentIndex < problems.length - 1) {
-        setCurrentIndex(currentIndex + 1);
-      } else {
-        alert("All problems submitted!");
-        navigate("/");
-      }
-      
-    } catch (err) {
-      console.error("Submission failed:", err);
-      alert(`Submission failed: ${err.response?.data?.message || err.message}`);
-    } finally {
-      setIsSubmitting(false);
-      setIsLoading(false);
+    const response = await axios.post(
+  "https://ce.judge0.com/submissions/?base64_encoded=true&wait=true",
+  {
+    source_code: encode(submission.code),
+    language_id: langId,
+    stdin: selectedProblem.sample_input
+  },
+  {
+    headers: {
+      "Content-Type": "application/json"
     }
-  };
+  }
+);
+       const decode = (str) => str ? decodeURIComponent(escape(atob(str))) : "";
+
+const result = response.data;
+executionStatus = result.status.description;
+
+if (result.status.id === 6) {
+  executionOutput = decode(result.compile_output) || "Compilation Error";
+} else if (result.status.id >= 7 && result.status.id <= 11) {
+  executionOutput = decode(result.stderr) || "Runtime Error";
+} else {
+  executionOutput = decode(result.stdout) || "No output.";
+}
+    // Step 3: Update local state for display
+    setOutput(executionOutput);
+    setStatus(executionStatus);
+
+    // Step 4: Submit results to your local server
+    try {
+        console.log("Submitting to local server:", {
+            team_id: teamInfo.team_id,
+            problem_id: selectedProblem.id,
+            language: submission.language,
+            code: submission.code,
+            Output: executionOutput,
+            status: executionStatus
+        });
+        
+        await axios.post("http://localhost:3001/submit", {
+            team_id: teamInfo.team_id,
+            team_name: teamInfo.team_name,
+            problem_id: selectedProblem.id,
+            language: submission.language,
+            code: submission.code,
+            Output: executionOutput,
+            status: executionStatus
+        });
+
+        // Move to next problem or finish
+        if (currentIndex < problems.length - 1) {
+            setCurrentIndex(currentIndex + 1);
+        } else {
+            alert("All problems submitted!");
+            navigate("/");
+        }
+
+    } catch (err) {
+        console.error("Submission to local server failed:", err);
+        alert(`Submission failed: ${err.response?.data?.error || err.message}`);
+    } finally {
+        setIsSubmitting(false);
+    }
+};
 
   // Show loading state
   if (isLoading) {

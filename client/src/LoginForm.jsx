@@ -63,29 +63,13 @@ function LoginForm() {
 
   return (
     <div className="login-container">
-      <div className="bubble-background"></div>
+      <div className="background-text">HackerRank</div>
+        <img src="\src\assets\spectrum.jpg" className="Spectrum-background"></img>       
       
-      <div className="shooting-stars">
-    {[...Array(20)].map((_, i) => (
-      <div
-        key={i}
-        className="star"
-        style={{
-          top: `${Math.random() * 100}%`,
-          left: `${Math.random() * 100}%`,
-          animationDelay: `${Math.random() * 5}s`,
-        }}
-      />
-    ))}
-  </div>
-      <div className="background-text">HackerRank
-        <img src="\src\assets\spectrum.jpg" className="Spectrum-background"></img>
-      </div>
       <div className="login-box">
         <h2 className="login-title">
-          {isRegistering ? "📝 Register Team" : "🚀 Team Login"}
+          {isRegistering ? " Register Team" : " Team Login"}
         </h2>
-
         <input
           className="login-input"
           placeholder="Team ID"
@@ -109,7 +93,7 @@ function LoginForm() {
 
         <button
           onClick={() => setIsRegistering(!isRegistering)}
-          className="toggle-button"
+          className="login-button"
         >
           {isRegistering ? "Already registered? Login" : "New team? Register"}
         </button>

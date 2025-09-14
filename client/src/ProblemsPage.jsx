@@ -25,7 +25,11 @@ function ProblemsPage() {
   const [output, setOutput] = useState('');
   const [status, setStatus] = useState('');
   const [showOutputPanel, setShowOutputPanel] = useState(false);
+const [runCount, setRunCount] = useState(0);
+const JUDGE0_API_KEY = import.meta.env.VITE_JUDGE0_API_KEY;
+const JUDGE0_BASE_URL = import.meta.env.VITE_JUDGE0_BASE_URL || "https://ce.judge0.com";
 
+  const RUN_LIMIT = 2;
 
   // Fetch problems data
   const fetchData = async () => {
@@ -112,6 +116,11 @@ function ProblemsPage() {
       loadSubmissionData(selectedProblem);
     }
   }, [selectedProblem, teamInfo.team_id]);
+// Reset run counter when a new problem is selected
+useEffect(() => {
+  setRunCount(0);
+}, [selectedProblem?.id]);
+
 
   const handleCodeChange = (code) => {
     if (selectedProblem) {
@@ -165,13 +174,15 @@ const handleSubmit = async () => {
     let allPassed = true;
     for (const test of allCases) {
       const response = await axios.post(
-        "https://ce.judge0.com/submissions/?base64_encoded=true&wait=true",
+        "${JUDGE0_BASE_URL}/submissions/?base64_encoded=true&wait=true",
         {
           source_code: encode(submission.code),
           language_id: langId,
           stdin: test.input
         },
-        { headers: { "Content-Type": "application/json" } }
+        { headers: {  'Content-Type': 'application/json' ,
+          ...(JUDGE0_API_KEY && { "X-RapidAPI-Key": JUDGE0_API_KEY })}
+       }
       );
 
       const result = response.data;
@@ -214,6 +225,11 @@ const handleSubmit = async () => {
 };
 
 const runCode = async () => {
+  if (runCount >= RUN_LIMIT) {
+      alert("You have reached the maximum number of runs allowed.");
+      return;
+    }
+    setRunCount(prev => prev +1);
   if (!selectedProblem) return alert("No problem selected.");
 
   const submission = submissions[selectedProblem.id];
@@ -320,6 +336,7 @@ setShowOutputPanel(true); // Show output panel after run
   disabled={isSubmitting || !selectedProblem}
 >
   {isSubmitting ? "Running..." : "Run"}
+  ({RUN_LIMIT - runCount} left)
 </button>
         <button 
           onClick={handleSubmit} 

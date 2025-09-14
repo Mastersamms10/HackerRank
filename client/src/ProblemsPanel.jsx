@@ -10,6 +10,9 @@ function ProblemsPanel({ problems = [] }) {
       <div key={problem.id} className="problem-card">
         <h3>{problem.title}</h3>
         <p>{problem.description}</p>
+        <p>{problem.input_format}</p>
+        <p>{problem.output_format}</p>
+        <p>{problem.constraints}</p>
         {problem.sample_input && (
           <p><strong>Input:</strong> {problem.sample_input}</p>
         )}

@@ -24,6 +24,8 @@ function ProblemsPage() {
   const [error, setError] = useState(null);
   const [output, setOutput] = useState('');
   const [status, setStatus] = useState('');
+  const [showOutputPanel, setShowOutputPanel] = useState(false);
+
 
   // Fetch problems data
   const fetchData = async () => {
@@ -136,99 +138,139 @@ function ProblemsPage() {
     }
   };
 
-  const handleSubmit = async () => {
-    if (!selectedProblem) {
-        alert("No problem selected.");
-        return;
+const handleSubmit = async () => {
+  if (!selectedProblem) return alert("No problem selected.");
+
+  const submission = submissions[selectedProblem.id];
+  if (!submission || !submission.code.trim()) return alert("No code submitted.");
+
+  const langId =
+    submission.language === "java" ? 62 :
+    submission.language === "javascript" ? 93 :
+    submission.language === "c" ? 50 :
+    submission.language === "python" ? 71 : null;
+
+  if (langId === null) return alert("Unsupported language selected.");
+
+  setIsSubmitting(true);
+  const encode = (str) => btoa(unescape(encodeURIComponent(str)));
+  const decode = (str) => (str ? decodeURIComponent(escape(atob(str))) : "");
+
+  try {
+    const allCases = [
+      ...(selectedProblem.test_cases_public || []),
+      ...(selectedProblem.test_cases_hidden || [])
+    ];
+
+    let allPassed = true;
+    for (const test of allCases) {
+      const response = await axios.post(
+        "https://ce.judge0.com/submissions/?base64_encoded=true&wait=true",
+        {
+          source_code: encode(submission.code),
+          language_id: langId,
+          stdin: test.input
+        },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      const result = response.data;
+      let output = "";
+      if (result.status.id === 6) output = decode(result.compile_output) || "Compilation Error";
+      else if (result.status.id >= 7 && result.status.id <= 11) output = decode(result.stderr) || "Runtime Error";
+      else output = decode(result.stdout) || "No output.";
+
+      if (output.trim() !== test.expected_output.trim()) {
+        allPassed = false;
+      }
     }
 
-    const submission = submissions[selectedProblem.id];
-    if (!submission || !submission.code.trim()) {
-        alert("No code submitted for this problem.");
-        return;
+    const finalStatus = allPassed ? "Accepted" : "Wrong Answer";
+    setOutput(`Submission Result: ${finalStatus}`);
+    setStatus(finalStatus);
+
+    await axios.post("http://localhost:3001/submit", {
+      team_id: teamInfo.team_id,
+      team_name: teamInfo.team_name,
+      problem_id: selectedProblem.id,
+      language: submission.language,
+      code: submission.code,
+      Output: finalStatus,
+      status: finalStatus
+    });
+
+    if (currentIndex < problems.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    } else {
+      alert("All problems submitted!");
+      navigate("/");
     }
-
-    // Determine Judge0 language ID
-    const langId =
-        submission.language === "java" ? 62 :
-        submission.language === "javascript" ? 93 :
-        submission.language === "c" ? 50 :
-        submission.language === "python" ? 71 : null;
-
-    if (langId === null) {
-        alert("Unsupported language selected.");
-        return;
-    }
-
-    setIsSubmitting(true);
-    let executionOutput = '';
-    let executionStatus = '';
-    const encode = (str) => btoa(unescape(encodeURIComponent(str)));
-
-    const response = await axios.post(
-  "https://ce.judge0.com/submissions/?base64_encoded=true&wait=true",
-  {
-    source_code: encode(submission.code),
-    language_id: langId,
-    stdin: selectedProblem.sample_input
-  },
-  {
-    headers: {
-      "Content-Type": "application/json"
-    }
+  } catch (err) {
+    console.error("Submit failed:", err);
+    alert(`Submit failed: ${err.message}`);
+  } finally {
+    setIsSubmitting(false);
   }
-);
-       const decode = (str) => str ? decodeURIComponent(escape(atob(str))) : "";
+};
 
-const result = response.data;
-executionStatus = result.status.description;
+const runCode = async () => {
+  if (!selectedProblem) return alert("No problem selected.");
 
-if (result.status.id === 6) {
-  executionOutput = decode(result.compile_output) || "Compilation Error";
-} else if (result.status.id >= 7 && result.status.id <= 11) {
-  executionOutput = decode(result.stderr) || "Runtime Error";
-} else {
-  executionOutput = decode(result.stdout) || "No output.";
-}
-    // Step 3: Update local state for display
-    setOutput(executionOutput);
-    setStatus(executionStatus);
+  const submission = submissions[selectedProblem.id];
+  if (!submission || !submission.code.trim()) return alert("No code to run.");
 
-    // Step 4: Submit results to your local server
-    try {
-        console.log("Submitting to local server:", {
-            team_id: teamInfo.team_id,
-            problem_id: selectedProblem.id,
-            language: submission.language,
-            code: submission.code,
-            Output: executionOutput,
-            status: executionStatus
-        });
-        
-        await axios.post("http://localhost:3001/submit", {
-            team_id: teamInfo.team_id,
-            team_name: teamInfo.team_name,
-            problem_id: selectedProblem.id,
-            language: submission.language,
-            code: submission.code,
-            Output: executionOutput,
-            status: executionStatus
-        });
+  const langId =
+    submission.language === "java" ? 62 :
+    submission.language === "javascript" ? 93 :
+    submission.language === "c" ? 50 :
+    submission.language === "python" ? 71 : null;
 
-        // Move to next problem or finish
-        if (currentIndex < problems.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-        } else {
-            alert("All problems submitted!");
-            navigate("/");
-        }
+  if (langId === null) return alert("Unsupported language selected.");
 
-    } catch (err) {
-        console.error("Submission to local server failed:", err);
-        alert(`Submission failed: ${err.response?.data?.error || err.message}`);
-    } finally {
-        setIsSubmitting(false);
+  setIsSubmitting(true);
+  const encode = (str) => btoa(unescape(encodeURIComponent(str)));
+  const decode = (str) => (str ? decodeURIComponent(escape(atob(str))) : "");
+
+  try {
+    const results = [];
+    for (const test of selectedProblem.test_cases_public || []) {
+      const response = await axios.post(
+        "https://ce.judge0.com/submissions/?base64_encoded=true&wait=true",
+        {
+          source_code: encode(submission.code),
+          language_id: langId,
+          stdin: test.input
+        },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      const result = response.data;
+      const status = result.status.description;
+      let output = "";
+
+      if (result.status.id === 6) output = decode(result.compile_output) || "Compilation Error";
+      else if (result.status.id >= 7 && result.status.id <= 11) output = decode(result.stderr) || "Runtime Error";
+      else output = decode(result.stdout) || "No output.";
+
+      results.push({
+        input: test.input,
+        expected: test.expected_output,
+        got: output.trim(),
+        status,
+        passed: output.trim() === test.expected_output.trim()
+      });
     }
+    setOutput(results);
+    setStatus("Run Completed");
+setShowOutputPanel(true); // Show output panel after run
+  } catch (err) {
+    console.error("Run failed:", err);
+    alert(`Run failed: ${err.message}`);
+  } finally {
+    setIsSubmitting(false);
+  }
+ 
+
 };
 
   // Show loading state
@@ -274,6 +316,12 @@ if (result.status.id === 6) {
         <h2>{teamInfo.team_name} - {teamInfo.team_id}</h2>
         <Timer onTimeUp={handleSubmit} className="timer" />
         <button 
+  onClick={runCode} 
+  disabled={isSubmitting || !selectedProblem}
+>
+  {isSubmitting ? "Running..." : "Run"}
+</button>
+        <button 
           onClick={handleSubmit} 
           disabled={isSubmitting || !selectedProblem}
         >
@@ -286,18 +334,65 @@ if (result.status.id === 6) {
       
       <main>
         <ProblemsPanel problems={selectedProblem ? [selectedProblem] : []} />
-        
+       
+  {showOutputPanel && (
+  <div className="output-panel">
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <h3>Test Results:</h3>
+      <button onClick={() => setShowOutputPanel(false)} style={{ padding: "4px 8px" }}>
+        ✖ Close
+      </button>
+    </div>
+
+    {Array.isArray(output) ? (
+      <table border="1" cellPadding="6">
+        <thead>
+          <tr>
+            <th>Input</th>
+            <th>Expected</th>
+            <th>Got</th>
+            <th>Status</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          {output.map((res, i) => (
+            <tr key={i}>
+              <td>{res.input}</td>
+              <td>{res.expected}</td>
+              <td>{res.got}</td>
+              <td>{res.status}</td>
+              <td style={{ color: res.passed ? "green" : "red" }}>
+                {res.passed ? "Passed" : "Failed"}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    ) : (
+      <pre>{output}</pre>
+    )}
+  </div>
+)}
+
         <div className="right-half">
           {selectedProblem && submissions[selectedProblem.id] && (
-            <CodeEditor
-              initialCode={submissions[selectedProblem.id].code || ""}
-              initialLanguage={submissions[selectedProblem.id].language || "python"}
-              onCodeChange={handleCodeChange}
-              onLanguageChange={handleLanguageChange}
-            />
+           <CodeEditor
+  initialCode={
+    selectedProblem
+      ? selectedProblem[`starter_code_${submissions[selectedProblem.id]?.language || "python"}`]
+      : ""
+  }
+  initialLanguage={submissions[selectedProblem.id]?.language || "python"}
+  onCodeChange={handleCodeChange}
+  onLanguageChange={handleLanguageChange}
+/>
+
+
           )}
         </div>
       </main>
+      
     </div>
   );
 }

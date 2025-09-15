@@ -8,7 +8,7 @@
   --border-color: #2A2A2A;
 }
 body {
-  background:linear-gradient(#FFFFFF,#00FF99,#0A0F2C);
+  background:linear-gradient(#00a6ff,#7305da,#0f1847);;
   font-family: 'Orbitron', sans-serif;
   color: #ffffff;
   display: flex;    

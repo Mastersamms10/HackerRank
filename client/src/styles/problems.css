@@ -1,33 +1,28 @@
-
 header {
-  background: rgba(0, 0, 0, 0.7);
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
+  height: 75px;
+  background: #5100ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+header button:hover {
+  background: #5036b6;
 }
 
-.timer {
-  color: #00ffff;
-  font-weight: bold;
-  text-shadow: 0 0 10px #00ffff;
-}
 
 .problems-page {
   display: flex;
   flex-direction: column;
   height: 100vh;
   width: 100vw;
-}
-
-.right-half{
-  background: #0a0a0a;
-  border-radius: 8px;
-  padding: 1rem;
-  width: 90%;
-  max-width: 800px;
-  color: #00ffff;
 }
 
 header img {
@@ -41,22 +36,18 @@ header h2 {
 }
 
 header button {
-  background: linear-gradient(to right, #00ffff, #6600ff);
+  background: #7742ea;
   border: none;
   padding: 0.75rem 1.5rem;
   color: #000;
   font-weight: bold;
   border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 0 10px #00ffff;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 header button {
   transform: scale(1.05);
-  box-shadow: 0 0 20px #00ffff;
 }
-
-
 main {
   display: flex;
   flex: 1;
@@ -76,23 +67,20 @@ main {
 
 
 .left-half h3 {
-  color: #00ffff;
+  color: #ffffff;
   font-weight: bold;
   margin-bottom: 0.5rem;
 }
-
-
 .problem-card
 {
-  background: #1a1a1a;
-  border: 2px solid #00ffff;
+  background: #5100ff;
+  
   border-radius: 10px;
   padding: 1rem;
-  box-shadow: 0 0 15px black;
   margin: 1rem 0;
   width: 90%;
-  min-height: 45%;
-  max-width: 800px;
+  min-height: 75%;
+  max-width: 650px;
 }
 
 .problem-card 
@@ -108,6 +96,11 @@ main {
   padding: 20px;
   border-radius: 6px;
   margin-top: 20px;
+  position: absolute;
+  bottom: 125px;
+  right: 25px;
+  width: 450px;
+  height: 250px;
 }
 
 @keyframes fadeIn {

@@ -3,38 +3,24 @@
   flex-direction: column;
   gap: 1rem;
   padding: 1.5rem;
-  background: #0a0a0a;
+  background: #0303257f;
   border-radius: 8px;
-  max-width: 800px;
-  margin: auto;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
-  background: #0a0a0a;
+  width: 500px;
 }
 
 .editor-panel select {
   padding: 0.5rem;
   font-size: 1rem;
-  background-color: #2d2d2d;
+  background-color: #211741;
   color: #fff;
-  border: 1px solid black;
+  border: 1px solid rgb(0, 0, 0);
   border-radius: 4px;
   outline: none;
-}
-
-.editor-panel select:focus {
-  border-color: #00ffff;
-  box-shadow: 0 0 5px #00ffff;
-}
-
-
-.button-group button:hover {
-  background-color: #00cccc;
 }
 .code {
   height: 300px;
   overflow-y: auto;
   white-space: pre;
-  border: 1px solid black;
   border-radius: 4px;
   padding: 10px;
   box-sizing: border-box;
@@ -42,12 +28,12 @@
 
 
 .code::-webkit-scrollbar {
-  width: 8px;
+  width: 4px;
 }
 
 .code::-webkit-scrollbar-thumb {
-  background-color: #0ff;
-  border-radius: 4px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 2px;
 }
 
 .code::-webkit-scrollbar-track {

@@ -93,7 +93,7 @@
   pointer-events: none;
   white-space: nowrap;
   text-shadow:
-    0 0 10px #FFFFFF,
-    0 0 20px#00FF99,
+    0 0 10px hwb(0 100% 0%),
+    0 0 20px#8400ff,
     0 0 40px #0A0F2C;
 }

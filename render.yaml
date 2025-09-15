@@ -17,4 +17,10 @@ services:
       - key: PORT
         value: 5432
 
- 
+  - type: web
+    name: hackerrank-frontend
+    env: node
+    rootDir: client
+    buildCommand: npm install && npm run build
+    startCommand: npm run preview
+    staticPublishPath: dist

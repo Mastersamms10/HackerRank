@@ -1,31 +1,17 @@
-{
+  {
   "version": 2,
-  "name": "hacker-rank-app",
   "builds": [
-    {
-      "src": "client/package.json",
-      "use": "@vercel/next"
-    },
-    {
-      "src": "server/**/*.js",
-      "use": "@vercel/node"
-    }
+    { "src": "server/server.js", "use": "@vercel/node" },
+    { "src": "client/package.json", "use": "@vercel/static-build" }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "server/$1.js"
+      "dest": "server/server.js"
     },
     {
       "src": "/(.*)",
-      "dest": "/client/index.html"
+      "dest": "client/$1"
     }
-  ],
-  "env": {
-   "DB_HOST":"db.vccrwzrzkbnwebwfisiw.supabase.co",
-"DB_USER":"postgres",
-"DB_PASSWORD":"*sAmith10",
-"DB_NAME":"postgres"
-
-  }
+  ]
 }

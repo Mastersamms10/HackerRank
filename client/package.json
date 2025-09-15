@@ -4,11 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
+  "build": "react-scripts build"
+}
+,
   "dependencies": {
     "axios": "^1.11.0",
     "prismjs": "^1.30.0",

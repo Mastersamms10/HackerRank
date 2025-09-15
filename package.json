@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "dev": "concurrently \"npm run dev --prefix client\" \"nodemon server/server.js\""
+  "dev": "concurrently \"npm run dev --prefix client\" \"nodemon server/server.js\"",
+  "build": "npm run build --prefix client"
 },
   "keywords": [],
   "author": "",

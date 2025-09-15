@@ -8,7 +8,7 @@ function AdminPanel() {
   const navigate = useNavigate();
   const back = ()=> navigate("/");
   useEffect(() => {
-    axios.get("http://localhost:3001/admin/submissions")
+    axios.get("/admin/submissions")
       .then((res) => setSubmissions(res.data))
       .catch((err) => console.error("Error loading submissions:", err));
   }, []);

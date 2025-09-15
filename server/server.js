@@ -2,7 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const mysql = require("mysql2");
-
+const path = require("path");
 const app = express();
 
 
@@ -204,4 +204,5 @@ app.get("/submission", (req, res) => {
         }
     });
 });
+
 module.exports = app;

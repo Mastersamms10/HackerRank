@@ -62,7 +62,7 @@ const JUDGE0_BASE_URL = import.meta.env.VITE_JUDGE0_BASE_URL || "https://ce.judg
     try {
       console.log("Loading submission for problem:", problem.id);
       
-      const res = await axios.get("http://localhost:3001/submission", {
+      const res = await axios.get("/submission", {
         params: {
           team_id: teamInfo.team_id,
           problem_id: problem.id
@@ -174,7 +174,7 @@ const handleSubmit = async () => {
     let allPassed = true;
     for (const test of allCases) {
       const response = await axios.post(
-        "${JUDGE0_BASE_URL}/submissions/?base64_encoded=true&wait=true",
+        `${JUDGE0_BASE_URL}/submissions/?base64_encoded=true&wait=true`,
         {
           source_code: encode(submission.code),
           language_id: langId,
@@ -200,7 +200,7 @@ const handleSubmit = async () => {
     setOutput(`Submission Result: ${finalStatus}`);
     setStatus(finalStatus);
 
-    await axios.post("http://localhost:3001/submit", {
+    await axios.post("/submit", {
       team_id: teamInfo.team_id,
       team_name: teamInfo.team_name,
       problem_id: selectedProblem.id,

@@ -12,7 +12,7 @@ function LoginForm() {
   const handleSubmit = () => {
     if (team_id === "admin" && team_name === "admin") {
     // Admin login flow
-    axios.post("http://localhost:3001/admin/login", { username: team_id, password: team_name })
+    axios.post("/admin/login", { username: team_id, password: team_name })
       .then(() => {
         localStorage.setItem("isAdmin", "true");
         navigate("/admin",{state:{replace: true}});
@@ -20,7 +20,7 @@ function LoginForm() {
       .catch(() => alert("Admin login failed"));
     }
     else{
-    axios.post("http://localhost:3001/login", { team_id, team_name })
+    axios.post("/login", { team_id, team_name })
       .then(() => {
         
         navigate("/problems", {
@@ -34,7 +34,7 @@ function LoginForm() {
   };
 
   const handleRegister = () => {
-    axios.post("http://localhost:3001/register", { team_id, team_name })
+    axios.post("/register", { team_id, team_name })
       .then(() => {
         alert("Team registered successfully!");
         setIsRegistering(false); // Switch back to login mode

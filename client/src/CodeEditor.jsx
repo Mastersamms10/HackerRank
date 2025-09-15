@@ -75,11 +75,12 @@ function CodeEditor({ initialCode, initialLanguage = "c", onCodeChange, onLangua
           style={{
             fontFamily: '"Fira Code", monospace',
             fontSize: 14,
-            backgroundColor: theme === "light" ? "#f5f5f5" : "#2d2d2d",
+            backgroundColor: theme === "light" ? "#f5f5f5" : "#373535ff",
             color: theme === "light" ? "#000" : "#fff",
             borderRadius: "4px",
             lineHeight: "1.6",
-            minHeight: "250px"
+            minHeight: "250px",
+            maxHeight: "800px"
           }}
           textareaProps={{ spellCheck: false }}
         />

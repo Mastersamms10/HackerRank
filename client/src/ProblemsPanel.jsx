@@ -10,14 +10,18 @@ function ProblemsPanel({ problems = [] }) {
       <div key={problem.id} className="problem-card">
         <h3>{problem.title}</h3>
         <p>{problem.description}</p>
+        <h3>INPUT FORMAT</h3>
         <p>{problem.input_format}</p>
+        OUTPUT FORMAT
         <p>{problem.output_format}</p>
+        CONSTRAINTS
         <p>{problem.constraints}</p>
         {problem.sample_input && (
-          <p><strong>Input:</strong> {problem.sample_input}</p>
+          <strong><h3>Input:</h3>
+          <p> {problem.sample_input}</p></strong>
         )}
         {problem.sample_output && (
-          <p><strong>Output:</strong> {problem.sample_output}</p>
+          <strong><h3>Output: </h3><p> {problem.sample_output}</p></strong>
         )}
       </div>
     </div>

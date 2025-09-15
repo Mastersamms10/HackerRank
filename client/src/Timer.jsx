@@ -23,8 +23,8 @@ function Timer({ duration = 1200, onTimeUp }) {
   };
 
   return (
-    <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#0ff", marginRight: "20px" }}>
-      ⏱️ TIME REMAINING: {formatTime(secondsLeft)}
+    <div style={{ fontSize: "1.5rem", fontWeight: "bold",  marginRight: "20px" }}>
+       TIME REMAINING: {formatTime(secondsLeft)}
     </div>
   );
 }

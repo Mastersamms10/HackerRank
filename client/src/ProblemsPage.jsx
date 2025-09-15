@@ -352,7 +352,24 @@ setShowOutputPanel(true); // Show output panel after run
       <main>
         <ProblemsPanel problems={selectedProblem ? [selectedProblem] : []} />
        
-  {showOutputPanel && (
+  
+
+        
+          {selectedProblem && submissions[selectedProblem.id] && (
+           <CodeEditor
+  initialCode={
+    selectedProblem
+      ? selectedProblem[`starter_code_${submissions[selectedProblem.id]?.language || "python"}`]
+      : ""
+  }
+  initialLanguage={submissions[selectedProblem.id]?.language || "python"}
+  onCodeChange={handleCodeChange}
+  onLanguageChange={handleLanguageChange}
+/>
+
+
+          )}
+     {showOutputPanel && (
   <div className="output-panel">
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
       <h3>Test Results:</h3>
@@ -368,7 +385,7 @@ setShowOutputPanel(true); // Show output panel after run
             <th>Input</th>
             <th>Expected</th>
             <th>Got</th>
-            <th>Status</th>
+           
             <th>Result</th>
           </tr>
         </thead>
@@ -378,7 +395,7 @@ setShowOutputPanel(true); // Show output panel after run
               <td>{res.input}</td>
               <td>{res.expected}</td>
               <td>{res.got}</td>
-              <td>{res.status}</td>
+              
               <td style={{ color: res.passed ? "green" : "red" }}>
                 {res.passed ? "Passed" : "Failed"}
               </td>
@@ -391,23 +408,6 @@ setShowOutputPanel(true); // Show output panel after run
     )}
   </div>
 )}
-
-        <div className="right-half">
-          {selectedProblem && submissions[selectedProblem.id] && (
-           <CodeEditor
-  initialCode={
-    selectedProblem
-      ? selectedProblem[`starter_code_${submissions[selectedProblem.id]?.language || "python"}`]
-      : ""
-  }
-  initialLanguage={submissions[selectedProblem.id]?.language || "python"}
-  onCodeChange={handleCodeChange}
-  onLanguageChange={handleLanguageChange}
-/>
-
-
-          )}
-        </div>
       </main>
       
     </div>

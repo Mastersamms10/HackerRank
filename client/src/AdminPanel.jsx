@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./styles/admin.css";
+import { useNavigate } from "react-router-dom";
 
 function AdminPanel() {
   const [submissions, setSubmissions] = useState([]);
-
+  const navigate = useNavigate();
+  const back = ()=> navigate("/");
   useEffect(() => {
     axios.get("http://localhost:3001/admin/submissions")
       .then((res) => setSubmissions(res.data))
@@ -18,6 +20,7 @@ useEffect(() => {
 }, []);
   return (
     <div className="admin-panel">
+      <button onClick={back}>back</button>
       <h2> Admin Panel – Submissions Overview</h2>
       <div className="table-wrapper">
       <table className="submissions-table">

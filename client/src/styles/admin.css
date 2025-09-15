@@ -1,7 +1,7 @@
 .admin-panel {
   padding: 2rem;
-  background-color: #130933;
-  max-height: 90vh;         /* Limit height */
+  background-color:linear-gradient(#00a6ff,#7305da,#0f1847);
+  max-height: 89vh;         /* Limit height */
   overflow-y: auto;         /* Enable vertical scroll */
 }
 
@@ -26,9 +26,12 @@
   max-height: 200px;       /* Limit height */
   overflow: auto;          /* Enable both scroll directions */
   font-family: monospace;
-  background-color: #1a61b3;
+  background-color: #059d9f;
   padding: 0.5rem;
   border-radius: 4px;
   white-space: pre-wrap;   /* Wrap long lines */
 }
-
+.admin-panel button
+{
+  background-color: #00a6ff;
+}

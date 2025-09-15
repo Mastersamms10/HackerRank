@@ -7,17 +7,21 @@ function LoginForm() {
   const [team_id, setTeamId] = useState("");
   const [team_name, setTeamName] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleSubmit = () => {
+      setLoading(true);
     if (team_id === "admin" && team_name === "admin") {
     // Admin login flow
-    axios.post("/admin/login", { username: team_id, password: team_name })
+    axios.post(`${import.meta.env.VITE_DB_URL}/admin/login`, { username: team_id, password: team_name })
       .then(() => {
         localStorage.setItem("isAdmin", "true");
         navigate("/admin",{state:{replace: true}});
       })
       .catch(() => alert("Admin login failed"));
+      setLoading(false);
     }
     else{
     axios.post("/login", { team_id, team_name })
@@ -26,14 +30,17 @@ function LoginForm() {
         navigate("/problems", {
   state: { team_id, team_name },
   replace: true
+  
 });
 
       })
       .catch(() => alert("Login failed"));
+       setLoading(false);
     }
   };
 
   const handleRegister = () => {
+      setLoading(true);
     axios.post(`${import.meta.env.VITE_DB_URL}/register`, { team_id, team_name })
       .then(() => {
         alert("Team registered successfully!");
@@ -46,6 +53,7 @@ function LoginForm() {
           alert("Registration failed");
         }
       });
+       setLoading(false);
   };
 
   useEffect(() => {
@@ -85,18 +93,22 @@ function LoginForm() {
         />
 
         <button
-          onClick={isRegistering ? handleRegister : handleSubmit}
-          className="login-button"
-        >
-          {isRegistering ? "Register" : "Login"}
-        </button>
+  onClick={isRegistering ? handleRegister : handleSubmit}
+  className="login-button"
+  disabled={loading}
+>
+  {loading
+    ? (isRegistering ? "Registering..." : "Logging in...")
+    : (isRegistering ? "Register" : "Login")}
+</button>
 
-        <button
-          onClick={() => setIsRegistering(!isRegistering)}
-          className="login-button"
-        >
-          {isRegistering ? "Already registered? Login" : "New team? Register"}
-        </button>
+<button
+  onClick={() => setIsRegistering(!isRegistering)}
+  className="login-button"
+  disabled={loading}
+>
+  {isRegistering ? "Already registered? Login" : "New team? Register"}
+</button>
         
       </div>
     </div>

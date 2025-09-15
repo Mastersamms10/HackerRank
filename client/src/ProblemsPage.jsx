@@ -26,8 +26,8 @@ function ProblemsPage() {
   const [status, setStatus] = useState('');
   const [showOutputPanel, setShowOutputPanel] = useState(false);
 const [runCount, setRunCount] = useState(0);
-const JUDGE0_API_KEY = import.meta.env.VITE_JUDGE0_API_KEY;
-const JUDGE0_BASE_URL = import.meta.env.VITE_JUDGE0_BASE_URL || "https://ce.judge0.com";
+const JUDGE0_API_KEY = a953ae1415msh50c64ff10e4b1e3p115f2djsnd6a295eaba08;
+const JUDGE0_BASE_URL = "https://judge0-ce.p.rapidapi.com";
 
   const RUN_LIMIT = 2;
 
@@ -39,7 +39,7 @@ const JUDGE0_BASE_URL = import.meta.env.VITE_JUDGE0_BASE_URL || "https://ce.judg
       
       console.log("Fetching problems for team:", teamInfo.team_id);
       
-      const res = await axios.get("http://localhost:3001/problems", {
+      const res = await axios.get(`${process.env.DB_URL}/problems`, {
         params: { team_id: teamInfo.team_id }
       });
       
@@ -62,7 +62,7 @@ const JUDGE0_BASE_URL = import.meta.env.VITE_JUDGE0_BASE_URL || "https://ce.judg
     try {
       console.log("Loading submission for problem:", problem.id);
       
-      const res = await axios.get("/submission", {
+      const res = await axios.get(`${process.env.DB_URL}/submission`, {
         params: {
           team_id: teamInfo.team_id,
           problem_id: problem.id
@@ -200,7 +200,7 @@ const handleSubmit = async () => {
     setOutput(`Submission Result: ${finalStatus}`);
     setStatus(finalStatus);
 
-    await axios.post("/submit", {
+    await axios.post(`${process.env.DB_URL}/submit`, {
       team_id: teamInfo.team_id,
       team_name: teamInfo.team_name,
       problem_id: selectedProblem.id,

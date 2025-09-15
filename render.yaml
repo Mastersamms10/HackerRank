@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: hackerrank-backend
+    env: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: DB_HOST
+        value: db.vccrwzrzkbnwebwfisiw.supabase.co
+      - key: DB_USER
+        value: postgres
+      - key: DB_PASSWORD
+        value: *sAmith10
+      - key: DB_NAME
+        value: postgres
+      - key: PORT
+        value: 5432
+
+ 

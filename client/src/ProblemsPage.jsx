@@ -39,7 +39,7 @@ const JUDGE0_BASE_URL = "https://judge0-ce.p.rapidapi.com";
       
       console.log("Fetching problems for team:", teamInfo.team_id);
       
-      const res = await axios.get(`${process.env.DB_URL}/problems`, {
+      const res = await axios.get(`${import.meta.env.VITE_DB_URL}/problems`, {
         params: { team_id: teamInfo.team_id }
       });
       
@@ -62,7 +62,7 @@ const JUDGE0_BASE_URL = "https://judge0-ce.p.rapidapi.com";
     try {
       console.log("Loading submission for problem:", problem.id);
       
-      const res = await axios.get(`${process.env.DB_URL}/submission`, {
+      const res = await axios.get(`${import.meta.env.VITE_DB_URL}/submission`, {
         params: {
           team_id: teamInfo.team_id,
           problem_id: problem.id
@@ -200,7 +200,7 @@ const handleSubmit = async () => {
     setOutput(`Submission Result: ${finalStatus}`);
     setStatus(finalStatus);
 
-    await axios.post(`${process.env.DB_URL}/submit`, {
+    await axios.post(`${import.meta.env.VITE_DB_URL}/submit`, {
       team_id: teamInfo.team_id,
       team_name: teamInfo.team_name,
       problem_id: selectedProblem.id,

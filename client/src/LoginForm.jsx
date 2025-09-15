@@ -34,7 +34,7 @@ function LoginForm() {
   };
 
   const handleRegister = () => {
-    axios.post(`${process.env.DB_URL}/register`, { team_id, team_name })
+    axios.post(`${import.meta.env.VITE_DB_URL}/register`, { team_id, team_name })
       .then(() => {
         alert("Team registered successfully!");
         setIsRegistering(false); // Switch back to login mode
